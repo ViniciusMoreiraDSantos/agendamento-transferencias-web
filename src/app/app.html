@@ -1,0 +1,87 @@
+<div class="container">
+  <h1>Agendamento de Transferências</h1>
+
+  <section class="card">
+    <h2>Nova Transferência</h2>
+    <form [formGroup]="form" (ngSubmit)="agendar()">
+
+      <div class="row">
+        <div class="field">
+          <label>Conta de Origem</label>
+          <input formControlName="contaOrigem" placeholder="0000000000" maxlength="10" />
+          @if (form.get('contaOrigem')?.invalid && form.get('contaOrigem')?.touched) {
+            <span class="erro-campo">Informe 10 dígitos numéricos.</span>
+          }
+        </div>
+
+        <div class="field">
+          <label>Conta de Destino</label>
+          <input formControlName="contaDestino" placeholder="0000000000" maxlength="10" />
+          @if (form.get('contaDestino')?.invalid && form.get('contaDestino')?.touched) {
+            <span class="erro-campo">Informe 10 dígitos numéricos.</span>
+          }
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Valor (R$)</label>
+          <input (input)="aoDigitarValor($event)" (blur)="form.get('valor')?.markAsTouched()" placeholder="R$ 0,00" />
+          @if (form.get('valor')?.invalid && form.get('valor')?.touched) {
+            <span class="erro-campo">Informe um valor maior que zero.</span>
+          }
+        </div>
+
+        <div class="field">
+          <label>Data de Transferência</label>
+          <input formControlName="dataTransferencia" type="date" />
+          @if (form.get('dataTransferencia')?.invalid && form.get('dataTransferencia')?.touched) {
+            <span class="erro-campo">Informe a data de transferência.</span>
+          }
+        </div>
+      </div>
+
+      @if (erro()) {
+        <p class="mensagem erro">{{ erro() }}</p>
+      }
+      @if (sucesso()) {
+        <p class="mensagem sucesso">Transferência agendada com sucesso!</p>
+      }
+
+      <button type="submit" [disabled]="form.invalid">Agendar</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Extrato de Agendamentos</h2>
+
+    @if (transferencias().length === 0) {
+      <p class="vazio">Nenhum agendamento encontrado.</p>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>Conta Origem</th>
+            <th>Conta Destino</th>
+            <th>Valor</th>
+            <th>Taxa</th>
+            <th>Data Transferência</th>
+            <th>Data Agendamento</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (t of transferencias(); track t.id) {
+            <tr>
+              <td>{{ t.contaOrigem }}</td>
+              <td>{{ t.contaDestino }}</td>
+              <td>{{ t.valor | currency:'BRL' }}</td>
+              <td>{{ t.taxa | currency:'BRL' }}</td>
+              <td>{{ t.dataTransferencia | date:'dd/MM/yyyy' }}</td>
+              <td>{{ t.dataAgendamento | date:'dd/MM/yyyy' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </section>
+</div>
